@@ -1,5 +1,9 @@
 package com.example.Alert_City.repository;
 
-public class AuthorizationRepository {
-    
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface AuthorizationRepository extends JpaRepository<AuthorizationRepository, Long> {
+
 }
