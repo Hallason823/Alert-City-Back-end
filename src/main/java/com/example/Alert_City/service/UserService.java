@@ -1,5 +1,7 @@
 package com.example.Alert_City.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,5 +19,9 @@ public class UserService {
         user.setName(name);
         user.setPassword(password);
         return userRepository.save(user);
+    }
+
+    public Optional<UserModel> findByName(String name) {
+        return userRepository.findByName(name);
     }
 }
