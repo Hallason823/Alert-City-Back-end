@@ -19,7 +19,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Users")
+@Table(name = "User")
 public class UserModel {
 
     @Id
@@ -33,6 +33,10 @@ public class UserModel {
     private String telephone;
     private int levelOfTrust;
     private boolean activeNotifications;
+
     @OneToMany(mappedBy = "user")
     private List<AuthorizationModel> authorizations;
+
+    @OneToMany(mappedBy = "user")
+    private List<NotificationModel> notifications;
 }
