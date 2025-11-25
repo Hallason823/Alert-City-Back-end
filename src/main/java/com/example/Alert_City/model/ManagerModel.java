@@ -1,3 +1,5 @@
+package com.example.Alert_City.model;
+
 import java.util.List;
 
 import jakarta.persistence.Column;
