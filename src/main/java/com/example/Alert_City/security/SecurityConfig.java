@@ -30,17 +30,12 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/categories/**").permitAll()
-                .requestMatchers("/institutions/**").permitAll()
-                .requestMatchers("/occurrences/**").permitAll()
-                .requestMatchers("/comments/**").permitAll()
-                .requestMatchers("/attachments/**").permitAll()
-                .requestMatchers("/uploads/**").permitAll()
-                .requestMatchers("/swagger-ui/**").permitAll()
-                .requestMatchers("/swagger.html").permitAll()
-                .requestMatchers("/v3/api-docs/**").permitAll()
-                .requestMatchers("/swagger-resources/**").permitAll()
-                .requestMatchers("/webjars/**").permitAll()
+                .requestMatchers("/swagger-ui/**", "/swagger.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
+                .requestMatchers("GET", "/categories/**").permitAll()
+                .requestMatchers("GET", "/institutions/**").permitAll()
+                .requestMatchers("GET", "/occurrences/**").permitAll()
+                .requestMatchers("GET", "/comments/**").permitAll()
+                .requestMatchers("GET", "/uploads/**").permitAll()
                 .anyRequest().authenticated())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

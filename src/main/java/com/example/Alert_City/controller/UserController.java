@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.Alert_City.dto.UserDTO;
+import com.example.Alert_City.enums.ProfileType;
 import com.example.Alert_City.mapper.UserMapper;
 import com.example.Alert_City.model.UserModel;
 import com.example.Alert_City.service.UserService;
@@ -29,8 +32,31 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    private boolean isAuthorized(Long requestedUserId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return false;
+        }
+
+        String email = authentication.getName();
+        Optional<UserModel> authenticatedUserOpt = userService.findByEmail(email);
+
+        if (authenticatedUserOpt.isEmpty()) {
+            return false;
+        }
+
+        UserModel authenticatedUser = authenticatedUserOpt.get();
+
+        return authenticatedUser.getId().equals(requestedUserId) ||
+               authenticatedUser.getProfileType() == ProfileType.ADMIN;
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) {
+        if (!isAuthorized(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+        }
+
         Optional<UserModel> userOpt = userService.findById(id);
 
         if (userOpt.isPresent()) {
@@ -43,6 +69,10 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable Long id, @RequestBody Map<String, String> request) {
+        if (!isAuthorized(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
+        }
+
         Optional<UserModel> userOpt = userService.findById(id);
 
         if (userOpt.isPresent()) {
