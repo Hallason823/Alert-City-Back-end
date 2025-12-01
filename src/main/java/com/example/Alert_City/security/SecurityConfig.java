@@ -3,6 +3,7 @@ package com.example.Alert_City.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -31,11 +32,11 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/swagger.html", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
-                .requestMatchers("GET", "/categories/**").permitAll()
-                .requestMatchers("GET", "/institutions/**").permitAll()
-                .requestMatchers("GET", "/occurrences/**").permitAll()
-                .requestMatchers("GET", "/comments/**").permitAll()
-                .requestMatchers("GET", "/uploads/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/categories/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/institutions/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/occurrences/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/comments/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/uploads/**").permitAll()
                 .anyRequest().authenticated())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
