@@ -1,13 +1,16 @@
 package com.example.Alert_City.model;
 
-import java.util.List;
+import com.example.Alert_City.enums.ProfileType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,24 +22,27 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "User")
+@Table(name = "\"User\"")
 public class UserModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    @Column(unique = true, nullable = false)
+    private Long id;
+
+    @Column(nullable = false)
     private String name;
+
+    @Column(unique = true, nullable = false)
+    private String email;
+
     @Column(nullable = false)
     private String password;
-    private String email;
-    private String telephone;
-    private int levelOfTrust;
-    private boolean activeNotifications;
 
-    @OneToMany(mappedBy = "user")
-    private List<AuthorizationModel> authorizations;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ProfileType profileType;
 
-    @OneToMany(mappedBy = "user")
-    private List<NotificationModel> notifications;
+    @ManyToOne
+    @JoinColumn(name = "institution_id")
+    private InstitutionModel institution;
 }

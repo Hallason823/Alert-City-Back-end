@@ -28,7 +28,15 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(crsf -> crsf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth.requestMatchers("auth/**").permitAll().anyRequest().authenticated())
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/categories/**").permitAll()
+                .requestMatchers("/institutions/**").permitAll()
+                .requestMatchers("/occurrences/**").permitAll()
+                .requestMatchers("/comments/**").permitAll()
+                .requestMatchers("/attachments/**").permitAll()
+                .requestMatchers("/uploads/**").permitAll()
+                .anyRequest().authenticated())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

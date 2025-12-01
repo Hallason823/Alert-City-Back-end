@@ -4,37 +4,66 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.Alert_City.dto.LoginResponseDTO;
+import com.example.Alert_City.dto.UserDTO;
+import com.example.Alert_City.enums.ProfileType;
+import com.example.Alert_City.mapper.UserMapper;
 import com.example.Alert_City.model.UserModel;
 import com.example.Alert_City.security.JwtUtil;
 import com.example.Alert_City.service.UserService;
-import org.springframework.web.bind.annotation.PostMapping;
-
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
     @Autowired
-    UserService userService;
+    private UserService userService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody Map<String, String> request) {
-        UserModel user = userService.registerUser(request.get("name"), request.get("password"));
-        return ResponseEntity.ok(user);
+        String name = request.get("name");
+        String email = request.get("email");
+        String password = request.get("password");
+        String profileTypeStr = request.getOrDefault("profileType", "CITIZEN");
+
+        ProfileType profileType = ProfileType.valueOf(profileTypeStr.toUpperCase());
+
+        UserModel user = userService.registerUser(name, email, password, profileType);
+        UserDTO userDTO = UserMapper.toDTO(user);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
     }
 
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody Map<String, String> request) {
-        Optional<UserModel> user = userService.findByName(request.get("name"));
-        if (user.isPresent() && user.get().getPassword().equals(request.get("password"))) {
-            String token = JwtUtil.generateToken(user.get().getName());
-            return ResponseEntity.ok(Map.of("token", token));
+        String email = request.get("email");
+        String password = request.get("password");
+
+        Optional<UserModel> userOpt = userService.findByEmail(email);
+
+        if (userOpt.isPresent()) {
+            UserModel user = userOpt.get();
+            if (passwordEncoder.matches(password, user.getPassword())) {
+                String token = JwtUtil.generateToken(user.getEmail());
+
+                UserDTO userDTO = UserMapper.toDTO(user);
+                LoginResponseDTO response = new LoginResponseDTO(token, userDTO);
+
+                return ResponseEntity.ok(response);
+            }
         }
-        return ResponseEntity.status(401).body("Invalid Credentials");
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Credentials");
     }
 }

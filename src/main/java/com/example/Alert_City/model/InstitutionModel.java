@@ -16,17 +16,19 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Localization")
-public class LocalizationModel {
+@Table(name = "Institution")
+public class InstitutionModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
+
     @Column(nullable = false)
-    private Double latitude;
-    @Column(nullable = false)
-    private Double longitude;
-    private String address;
-    private String neighborhood;
-    private String city;
+    private String name;
+
+    private String description;
+
+    private String logoUrl;
+
+    private String officialContact;
 }

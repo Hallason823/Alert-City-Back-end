@@ -20,19 +20,24 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "Notification")
-public class NotificationModel {
+@Table(name = "Comment")
+public class CommentModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    @Column(nullable = false)
-    private String type;
-    private String payload;
-    private String channel;
-    private LocalDateTime submittedAt;
+    private Long id;
+
+    @Column(columnDefinition = "TEXT", nullable = false)
+    private String text;
+
+    @Column(name = "posted_at", nullable = false)
+    private LocalDateTime postedAt;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private UserModel user;
+
+    @ManyToOne
+    @JoinColumn(name = "occurrence_id", nullable = false)
+    private OccurrenceModel occurrence;
 }

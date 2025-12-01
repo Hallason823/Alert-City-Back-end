@@ -10,5 +10,5 @@ import com.example.Alert_City.model.UserModel;
 @Repository
 public interface UserRepository extends JpaRepository<UserModel, Long> {
 
-    Optional<UserModel> findByName(String name);
+    Optional<UserModel> findByEmail(String email);
 }
